@@ -3,6 +3,7 @@
 :root {
   --background: #faf9f7;
   --foreground: #1a1a2e;
+  --bg-image: url('/images/background.jpg');
 }
 
 @theme inline {
@@ -26,11 +27,26 @@
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
+  background-image: var(--bg-image);
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center;
   color: var(--foreground);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  position: relative;
+}
+
+/* 半透明遮罩层，保证内容可读 */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(250, 249, 247, 0.82);
+  z-index: -1;
+  pointer-events: none;
 }
 
 /* Smooth page transitions */

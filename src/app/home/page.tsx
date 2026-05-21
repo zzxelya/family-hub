@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { MessageCircle, BookImage, Images, CalendarDays, Gift, ChevronRight } from "lucide-react";
+import { MessageCircle, BookImage, Images, CalendarDays, Gift, ImagePlus } from "lucide-react";
 import { Message, Post, FamilyEvent, Member } from "@/lib/types";
 import Navbar from "@/components/Navbar";
 import MemberAvatar from "@/components/MemberAvatar";
 import ActivityFeed from "@/components/ActivityFeed";
+import BackgroundSettings from "@/components/BackgroundSettings";
 
 type ActivityItem =
   | { type: "message"; data: Message }
@@ -24,6 +25,7 @@ export default function HomePage() {
   const [members, setMembers] = useState<Member[]>([]);
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [upcomingEvents, setUpcomingEvents] = useState<FamilyEvent[]>([]);
+  const [showBgSettings, setShowBgSettings] = useState(false);
 
   useEffect(() => {
     Promise.all([fetchMembers(), fetchActivities()]);
@@ -74,16 +76,30 @@ export default function HomePage() {
         <div className="relative bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-3xl p-6 text-white overflow-hidden shadow-lg">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
           <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2" />
-          <h1 className="text-2xl font-bold mb-4 relative z-10">我们的家</h1>
-          <div className="flex gap-3 overflow-x-auto pb-1 relative z-10 scrollbar-hide">
+          <div className="flex items-center justify-between mb-4 relative z-10">
+            <h1 className="text-2xl font-bold">我们的家</h1>
+            <button
+              onClick={() => setShowBgSettings(true)}
+              className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors"
+              title="更换背景"
+            >
+              <ImagePlus size={16} />
+            </button>
+          </div>
+          <div className="flex gap-4 overflow-x-auto pb-1 relative z-10 scrollbar-hide">
             {members.map((member) => (
-              <div key={member.id} className="flex flex-col items-center gap-1.5 shrink-0">
+              <div key={member.id} className="flex flex-col items-center gap-2 shrink-0">
                 <MemberAvatar member={member} size="lg" withRing />
-                <span className="text-xs opacity-90 font-medium">{member.name}</span>
+                <span className="text-xs font-medium" style={{ textShadow: "0 1px 3px rgba(0,0,0,0.3)" }}>{member.name}</span>
               </div>
             ))}
           </div>
         </div>
+
+        {/* Background Settings Modal */}
+        {showBgSettings && (
+          <BackgroundSettings onClose={() => setShowBgSettings(false)} />
+        )}
 
         {/* Quick Links */}
         <div className="grid grid-cols-4 gap-2.5">

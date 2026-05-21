@@ -1,14 +1,16 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Settings } from "lucide-react";
 import { Member } from "@/lib/types";
 import MemberAvatar from "./MemberAvatar";
+import MemberManager from "./MemberManager";
 
 export default function MemberSelector() {
   const [members, setMembers] = useState<Member[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showManager, setShowManager] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -101,7 +103,23 @@ export default function MemberSelector() {
               )}
             </button>
           ))}
+          <div className="border-t border-gray-100 mt-1 pt-1">
+            <button
+              onClick={() => {
+                setShowDropdown(false);
+                setShowManager(true);
+              }}
+              className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50/50 transition-colors text-gray-500"
+            >
+              <Settings size={16} />
+              <span className="text-sm">管理成员</span>
+            </button>
+          </div>
         </div>
+      )}
+
+      {showManager && (
+        <MemberManager onClose={() => setShowManager(false)} />
       )}
     </div>
   );

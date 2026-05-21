@@ -57,3 +57,13 @@ CREATE INDEX IF NOT EXISTS idx_events_date ON events(date ASC);
 CREATE INDEX IF NOT EXISTS idx_messages_member_id ON messages(member_id);
 CREATE INDEX IF NOT EXISTS idx_posts_member_id ON posts(member_id);
 CREATE INDEX IF NOT EXISTS idx_events_member_id ON events(member_id);
+
+-- 全局设置表
+CREATE TABLE IF NOT EXISTS settings (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE settings ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow anon read on settings" ON settings FOR SELECT TO anon USING (true);
