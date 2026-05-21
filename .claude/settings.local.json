@@ -3,7 +3,9 @@
     "allow": [
       "Bash(npx next *)",
       "Bash(npx tsc *)",
-      "Bash(npm install *)"
+      "Bash(npm install *)",
+      "Bash(git config *)",
+      "Bash(git push *)"
     ]
   }
 }
