@@ -11,14 +11,19 @@ export default function MessagesPage() {
   const [memberId, setMemberId] = useState<string | null>(null);
 
   useEffect(() => {
-    const saved = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("family_hub_member="))
-      ?.split("=")[1];
-    if (saved) setMemberId(saved);
-
+    fetchSelectedMember();
     fetchMessages();
   }, []);
+
+  async function fetchSelectedMember() {
+    try {
+      const res = await fetch("/api/members/selected");
+      if (res.ok) {
+        const { memberId: id } = await res.json();
+        if (id) setMemberId(id);
+      }
+    } catch {}
+  }
 
   async function fetchMessages() {
     const res = await fetch("/api/messages");

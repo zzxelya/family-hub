@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase";
 import { Member } from "@/lib/types";
 import MemberAvatar from "./MemberAvatar";
 
@@ -12,25 +11,43 @@ export default function MemberSelector() {
 
   useEffect(() => {
     fetchMembers();
-    const saved = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("family_hub_member="))
-      ?.split("=")[1];
-    if (saved) setSelectedId(saved);
+    fetchSelectedMember();
   }, []);
 
   async function fetchMembers() {
-    const { data } = await supabase
-      .from("members")
-      .select("*")
-      .order("created_at");
-    if (data) setMembers(data);
+    try {
+      const res = await fetch("/api/members");
+      const data = await res.json();
+      if (Array.isArray(data)) setMembers(data);
+    } catch (err) {
+      console.error("Failed to fetch members:", err);
+    }
+  }
+
+  async function fetchSelectedMember() {
+    try {
+      const res = await fetch("/api/members/selected");
+      if (res.ok) {
+        const { memberId } = await res.json();
+        if (memberId) setSelectedId(memberId);
+      }
+    } catch {
+      // Not selected yet, that's fine
+    }
   }
 
   async function selectMember(id: string) {
     setSelectedId(id);
     setShowDropdown(false);
-    document.cookie = `family_hub_member=${id}; path=/; max-age=${60 * 60 * 24 * 30}`;
+    try {
+      await fetch("/api/members/set-member", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ memberId: id }),
+      });
+    } catch (err) {
+      console.error("Failed to set member:", err);
+    }
   }
 
   const selected = members.find((m) => m.id === selectedId);

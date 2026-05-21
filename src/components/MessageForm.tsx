@@ -22,7 +22,7 @@ export default function MessageForm({
       const res = await fetch("/api/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: content.trim(), member_id: memberId }),
+        body: JSON.stringify({ content: content.trim() }),
       });
       const data = await res.json();
       if (res.ok) {

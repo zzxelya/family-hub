@@ -31,7 +31,6 @@ export default function EventForm({
           date,
           description: description.trim(),
           recurrence,
-          member_id: memberId,
         }),
       });
       const data = await res.json();

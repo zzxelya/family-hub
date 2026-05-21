@@ -26,7 +26,6 @@ export default function PostForm({
     for (const file of Array.from(files)) {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("bucket", "photos");
 
       try {
         const res = await fetch("/api/upload", { method: "POST", body: formData });
@@ -34,7 +33,9 @@ export default function PostForm({
         if (data.url) {
           setImages((prev) => [...prev, data.url]);
         }
-      } catch {}
+      } catch (err) {
+          console.error("Upload failed:", err);
+        }
     }
     setUploading(false);
     if (fileRef.current) fileRef.current.value = "";
@@ -56,7 +57,6 @@ export default function PostForm({
         body: JSON.stringify({
           title: title.trim(),
           content: content.trim(),
-          member_id: memberId,
           image_urls: images,
         }),
       });

@@ -42,25 +42,13 @@ ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE events ENABLE ROW LEVEL SECURITY;
 
--- RLS 策略：允许 anon 角色读写
+-- RLS 策略：anon 仅可读取，写入操作需通过 service_role（后端 API）
 CREATE POLICY "Allow anon read on members" ON members FOR SELECT TO anon USING (true);
-CREATE POLICY "Allow anon insert on members" ON members FOR INSERT TO anon WITH CHECK (true);
-CREATE POLICY "Allow anon update on members" ON members FOR UPDATE TO anon USING (true);
-CREATE POLICY "Allow anon delete on members" ON members FOR DELETE TO anon USING (true);
-
 CREATE POLICY "Allow anon read on messages" ON messages FOR SELECT TO anon USING (true);
-CREATE POLICY "Allow anon insert on messages" ON messages FOR INSERT TO anon WITH CHECK (true);
-CREATE POLICY "Allow anon delete on messages" ON messages FOR DELETE TO anon USING (true);
-
 CREATE POLICY "Allow anon read on posts" ON posts FOR SELECT TO anon USING (true);
-CREATE POLICY "Allow anon insert on posts" ON posts FOR INSERT TO anon WITH CHECK (true);
-CREATE POLICY "Allow anon update on posts" ON posts FOR UPDATE TO anon USING (true);
-CREATE POLICY "Allow anon delete on posts" ON posts FOR DELETE TO anon USING (true);
-
 CREATE POLICY "Allow anon read on events" ON events FOR SELECT TO anon USING (true);
-CREATE POLICY "Allow anon insert on events" ON events FOR INSERT TO anon WITH CHECK (true);
-CREATE POLICY "Allow anon update on events" ON events FOR UPDATE TO anon USING (true);
-CREATE POLICY "Allow anon delete on events" ON events FOR DELETE TO anon USING (true);
+
+-- service_role 拥有完全访问权限（Supabase 默认行为，无需额外策略）
 
 -- 创建索引
 CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at DESC);
