@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { MessageCircle, BookImage, Images, CalendarDays, Gift, ChevronRight } from "lucide-react";
 import { Message, Post, FamilyEvent, Member } from "@/lib/types";
 import Navbar from "@/components/Navbar";
 import MemberAvatar from "@/components/MemberAvatar";
@@ -11,6 +12,13 @@ type ActivityItem =
   | { type: "message"; data: Message }
   | { type: "post"; data: Post }
   | { type: "event"; data: FamilyEvent };
+
+const QUICK_LINKS = [
+  { href: "/messages", label: "留言", Icon: MessageCircle, gradient: "from-indigo-500 to-blue-500", bg: "bg-indigo-50", text: "text-indigo-600" },
+  { href: "/journal", label: "日志", Icon: BookImage, gradient: "from-amber-500 to-orange-500", bg: "bg-amber-50", text: "text-amber-600" },
+  { href: "/gallery", label: "相册", Icon: Images, gradient: "from-emerald-500 to-teal-500", bg: "bg-emerald-50", text: "text-emerald-600" },
+  { href: "/calendar", label: "日程", Icon: CalendarDays, gradient: "from-pink-500 to-rose-500", bg: "bg-pink-50", text: "text-pink-600" },
+];
 
 export default function HomePage() {
   const [members, setMembers] = useState<Member[]>([]);
@@ -61,66 +69,64 @@ export default function HomePage() {
   return (
     <>
       <Navbar />
-      <main className="max-w-lg mx-auto pt-16 pb-20 px-4 space-y-6">
-        <div className="bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl p-6 text-white">
-          <h1 className="text-2xl font-bold mb-4">我们的家</h1>
-          <div className="flex gap-3">
+      <main className="max-w-lg mx-auto pt-16 pb-20 px-4 space-y-5">
+        {/* Banner */}
+        <div className="relative bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-3xl p-6 text-white overflow-hidden shadow-lg">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2" />
+          <h1 className="text-2xl font-bold mb-4 relative z-10">我们的家</h1>
+          <div className="flex gap-3 overflow-x-auto pb-1 relative z-10 scrollbar-hide">
             {members.map((member) => (
-              <div key={member.id} className="flex flex-col items-center gap-1">
-                <MemberAvatar member={member} size="lg" />
-                <span className="text-xs opacity-90">{member.name}</span>
+              <div key={member.id} className="flex flex-col items-center gap-1.5 shrink-0">
+                <MemberAvatar member={member} size="lg" withRing />
+                <span className="text-xs opacity-90 font-medium">{member.name}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="flex gap-3">
-          <Link
-            href="/messages"
-            className="flex-1 bg-white rounded-xl p-3 shadow-sm border border-gray-100 text-center hover:shadow-md transition-shadow"
-          >
-            <div className="text-2xl mb-1">💬</div>
-            <div className="text-xs text-gray-600">留言</div>
-          </Link>
-          <Link
-            href="/journal"
-            className="flex-1 bg-white rounded-xl p-3 shadow-sm border border-gray-100 text-center hover:shadow-md transition-shadow"
-          >
-            <div className="text-2xl mb-1">📝</div>
-            <div className="text-xs text-gray-600">日志</div>
-          </Link>
-          <Link
-            href="/gallery"
-            className="flex-1 bg-white rounded-xl p-3 shadow-sm border border-gray-100 text-center hover:shadow-md transition-shadow"
-          >
-            <div className="text-2xl mb-1">📸</div>
-            <div className="text-xs text-gray-600">相册</div>
-          </Link>
-          <Link
-            href="/calendar"
-            className="flex-1 bg-white rounded-xl p-3 shadow-sm border border-gray-100 text-center hover:shadow-md transition-shadow"
-          >
-            <div className="text-2xl mb-1">📅</div>
-            <div className="text-xs text-gray-600">日程</div>
-          </Link>
+        {/* Quick Links */}
+        <div className="grid grid-cols-4 gap-2.5">
+          {QUICK_LINKS.map(({ href, label, Icon, bg, text }) => (
+            <Link
+              key={href}
+              href={href}
+              className="flex flex-col items-center gap-1.5 py-3 rounded-2xl bg-white shadow-sm border border-[var(--color-border)] hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 btn-press"
+            >
+              <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center`}>
+                <Icon size={20} className={text} />
+              </div>
+              <span className="text-xs text-gray-600 font-medium">{label}</span>
+            </Link>
+          ))}
         </div>
 
+        {/* Upcoming Events */}
         {upcomingEvents.length > 0 && (
           <div>
-            <h2 className="text-sm font-medium text-gray-500 mb-2">即将到来</h2>
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 divide-y divide-gray-50">
+            <h2 className="text-sm font-semibold text-gray-500 mb-2 flex items-center gap-1">
+              <Gift size={14} />
+              即将到来
+            </h2>
+            <div className="bg-white rounded-2xl shadow-sm border border-[var(--color-border)] p-4 divide-y divide-gray-50">
               {upcomingEvents.map((event) => {
                 const date = new Date(event.date + "T00:00:00");
                 const days = Math.ceil(
                   (date.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
                 );
                 return (
-                  <div key={event.id} className="flex items-center justify-between py-2">
-                    <span className="text-sm">
-                      {event.recurrence === "yearly" ? "🎂 " : "📅 "}
-                      {event.title}
+                  <div key={event.id} className="flex items-center justify-between py-2.5 first:pt-0 last:pb-0">
+                    <span className="text-sm flex items-center gap-1.5">
+                      {event.recurrence === "yearly" ? "🎂" : "📅"}
+                      <span className="font-medium text-gray-800">{event.title}</span>
                     </span>
-                    <span className="text-xs text-indigo-500">
+                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                      days <= 0
+                        ? "bg-indigo-100 text-indigo-600"
+                        : days <= 7
+                        ? "bg-amber-100 text-amber-700"
+                        : "bg-gray-100 text-gray-500"
+                    }`}>
                       {days <= 0 ? "今天" : `${days}天后`}
                     </span>
                   </div>
@@ -130,9 +136,13 @@ export default function HomePage() {
           </div>
         )}
 
+        {/* Activity Feed */}
         <div>
-          <h2 className="text-sm font-medium text-gray-500 mb-2">最新动态</h2>
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-sm font-semibold text-gray-500">最新动态</h2>
+            <span className="text-xs text-gray-400">{activities.length} 条</span>
+          </div>
+          <div className="bg-white rounded-2xl shadow-sm border border-[var(--color-border)] p-4">
             <ActivityFeed items={activities} members={members} />
           </div>
         </div>

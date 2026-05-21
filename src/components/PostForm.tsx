@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { Plus, X, ImagePlus, Loader2, PenLine } from "lucide-react";
 import { Post } from "@/lib/types";
 
 export default function PostForm({
@@ -34,8 +35,8 @@ export default function PostForm({
           setImages((prev) => [...prev, data.url]);
         }
       } catch (err) {
-          console.error("Upload failed:", err);
-        }
+        console.error("Upload failed:", err);
+      }
     }
     setUploading(false);
     if (fileRef.current) fileRef.current.value = "";
@@ -78,19 +79,23 @@ export default function PostForm({
       <button
         onClick={() => setShowForm(true)}
         disabled={!memberId}
-        className="w-full py-3 bg-indigo-500 hover:bg-indigo-600 disabled:bg-gray-300 text-white rounded-2xl font-medium transition-colors text-sm"
+        className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 disabled:from-gray-300 disabled:to-gray-300 text-white rounded-2xl font-medium transition-all text-sm btn-press shadow-sm hover:shadow-md disabled:shadow-none flex items-center justify-center gap-2"
       >
+        <PenLine size={16} />
         {memberId ? "写新日志" : "请先选择身份"}
       </button>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 space-y-3">
+    <form onSubmit={handleSubmit} className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-[var(--color-border)] p-4 space-y-3" style={{ animation: "slideUp 0.3s ease-out" }}>
       <div className="flex justify-between items-center">
-        <h3 className="font-semibold text-gray-800">写日志</h3>
-        <button type="button" onClick={() => setShowForm(false)} className="text-gray-400 hover:text-gray-600">
-          ✕
+        <h3 className="font-semibold text-gray-800 flex items-center gap-1.5">
+          <PenLine size={16} className="text-amber-500" />
+          写日志
+        </h3>
+        <button type="button" onClick={() => setShowForm(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
+          <X size={18} />
         </button>
       </div>
       <input
@@ -98,7 +103,7 @@ export default function PostForm({
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder="标题"
-        className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:border-indigo-400 outline-none text-sm"
+        className="w-full px-3 py-2.5 rounded-xl border border-[var(--color-border)] focus:border-amber-400 focus:ring-2 focus:ring-amber-100 outline-none text-sm bg-white/60 transition-all"
         required
       />
       <textarea
@@ -106,25 +111,28 @@ export default function PostForm({
         onChange={(e) => setContent(e.target.value)}
         placeholder="记录一下今天的生活..."
         rows={3}
-        className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:border-indigo-400 outline-none text-sm resize-none"
+        className="w-full px-3 py-2.5 rounded-xl border border-[var(--color-border)] focus:border-amber-400 focus:ring-2 focus:ring-amber-100 outline-none text-sm resize-none bg-white/60 transition-all"
       />
-      <div className="flex flex-wrap gap-2">
-        {images.map((url, i) => (
-          <div key={i} className="relative w-20 h-20">
-            <img src={url} alt="" className="w-full h-full object-cover rounded-lg" />
-            <button
-              type="button"
-              onClick={() => removeImage(i)}
-              className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center"
-            >
-              ✕
-            </button>
-          </div>
-        ))}
-      </div>
+      {images.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {images.map((url, i) => (
+            <div key={i} className="relative w-20 h-20 group">
+              <img src={url} alt="" className="w-full h-full object-cover rounded-xl" />
+              <button
+                type="button"
+                onClick={() => removeImage(i)}
+                className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 hover:bg-red-600 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+              >
+                <X size={12} />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
       <div className="flex gap-2">
-        <label className="px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm cursor-pointer transition-colors">
-          {uploading ? "上传中..." : "添加图片"}
+        <label className="px-3 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm cursor-pointer transition-colors flex items-center gap-1.5 text-gray-600">
+          {uploading ? <Loader2 size={14} className="animate-spin" /> : <ImagePlus size={14} />}
+          {uploading ? "上传中..." : "图片"}
           <input
             ref={fileRef}
             type="file"
@@ -137,8 +145,9 @@ export default function PostForm({
         <button
           type="submit"
           disabled={submitting || !title.trim()}
-          className="flex-1 py-2 bg-indigo-500 hover:bg-indigo-600 disabled:bg-gray-300 text-white rounded-xl text-sm font-medium transition-colors"
+          className="flex-1 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 disabled:from-gray-300 disabled:to-gray-300 text-white rounded-xl text-sm font-medium transition-all btn-press shadow-sm disabled:shadow-none flex items-center justify-center gap-1.5"
         >
+          {submitting && <Loader2 size={14} className="animate-spin" />}
           {submitting ? "发布中..." : "发布"}
         </button>
       </div>

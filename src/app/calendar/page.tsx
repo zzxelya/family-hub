@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { CalendarDays } from "lucide-react";
 import { FamilyEvent } from "@/lib/types";
 import Navbar from "@/components/Navbar";
 import EventItem from "@/components/EventItem";
@@ -44,13 +45,19 @@ export default function CalendarPage() {
     <>
       <Navbar />
       <main className="max-w-lg mx-auto pt-16 pb-20 px-4 space-y-4">
-        <h2 className="text-xl font-bold text-gray-800">日程管理</h2>
+        <div className="flex items-center gap-2">
+          <CalendarDays size={22} className="text-pink-500" />
+          <h2 className="text-xl font-bold text-gray-800">日程管理</h2>
+        </div>
         <EventForm memberId={memberId} onCreated={handleEventCreated} />
 
         {upcoming.length > 0 && (
           <div>
-            <h3 className="text-sm font-medium text-gray-500 mb-2">即将到来</h3>
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 divide-y divide-gray-50">
+            <h3 className="text-sm font-semibold text-gray-500 mb-2 flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-indigo-500" />
+              即将到来
+            </h3>
+            <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-sm border border-[var(--color-border)] p-4 divide-y divide-gray-50">
               {upcoming.map((event) => (
                 <EventItem key={event.id} event={event} />
               ))}
@@ -60,8 +67,11 @@ export default function CalendarPage() {
 
         {past.length > 0 && (
           <div>
-            <h3 className="text-sm font-medium text-gray-500 mb-2">已过</h3>
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 divide-y divide-gray-50">
+            <h3 className="text-sm font-semibold text-gray-400 mb-2 flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-gray-300" />
+              已过
+            </h3>
+            <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-sm border border-[var(--color-border)] p-4 divide-y divide-gray-50 opacity-70">
               {[...past].reverse().map((event) => (
                 <EventItem key={event.id} event={event} />
               ))}
@@ -70,8 +80,9 @@ export default function CalendarPage() {
         )}
 
         {events.length === 0 && (
-          <div className="text-center text-gray-400 py-12 text-sm">
-            还没有日程，添加一个吧
+          <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-sm border border-[var(--color-border)] p-12 text-center">
+            <div className="text-4xl mb-3">📅</div>
+            <p className="text-gray-400 text-sm">还没有日程，添加一个吧</p>
           </div>
         )}
       </main>

@@ -13,7 +13,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN">
-      <body className="bg-gray-50 min-h-screen">{children}</body>
+      <head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=LXGW+WenKai:wght@300;400;700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="bg-[var(--background)] min-h-screen antialiased">
+        {children}
+      </body>
     </html>
   );
 }
