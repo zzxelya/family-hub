@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isAuthenticated, getSelectedMemberId } from "@/lib/auth";
+import { checkAuth, getMemberIdFromRequest } from "@/lib/auth";
 import { supabase, createServerClient } from "@/lib/supabase";
 
 const VALID_RECURRENCE = ["none", "yearly", "monthly"] as const;
@@ -17,7 +17,7 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  if (!(await isAuthenticated())) {
+  if (!(await checkAuth(request.headers))) {
     return NextResponse.json({ error: "未授权" }, { status: 401 });
   }
 
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "日期格式无效" }, { status: 400 });
   }
 
-  const memberId = await getSelectedMemberId();
+  const memberId = await getMemberIdFromRequest(request.headers);
   if (!memberId) {
     return NextResponse.json({ error: "请先选择身份" }, { status: 400 });
   }
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
-  if (!(await isAuthenticated())) {
+  if (!(await checkAuth(request.headers))) {
     return NextResponse.json({ error: "未授权" }, { status: 401 });
   }
 
@@ -102,7 +102,7 @@ export async function PATCH(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  if (!(await isAuthenticated())) {
+  if (!(await checkAuth(request.headers))) {
     return NextResponse.json({ error: "未授权" }, { status: 401 });
   }
 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isAuthenticated } from "@/lib/auth";
+import { checkAuth } from "@/lib/auth";
 import { supabase, createServerClient } from "@/lib/supabase";
 
 export async function GET() {
@@ -15,7 +15,7 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  if (!(await isAuthenticated())) {
+  if (!(await checkAuth(request.headers))) {
     return NextResponse.json({ error: "未授权" }, { status: 401 });
   }
 
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
-  if (!(await isAuthenticated())) {
+  if (!(await checkAuth(request.headers))) {
     return NextResponse.json({ error: "未授权" }, { status: 401 });
   }
 
@@ -89,7 +89,7 @@ export async function PATCH(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  if (!(await isAuthenticated())) {
+  if (!(await checkAuth(request.headers))) {
     return NextResponse.json({ error: "未授权" }, { status: 401 });
   }
 

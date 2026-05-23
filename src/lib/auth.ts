@@ -8,10 +8,9 @@ if (!FAMILY_PASSWORD) {
 const SESSION_COOKIE = "family_hub_auth";
 const MEMBER_COOKIE = "family_hub_member";
 
-// Simple in-memory rate limiter for login attempts
 const loginAttempts = new Map<string, { count: number; resetAt: number }>();
 const MAX_LOGIN_ATTEMPTS = 10;
-const LOGIN_WINDOW_MS = 60 * 1000; // 1 minute
+const LOGIN_WINDOW_MS = 60 * 1000;
 
 export function checkLoginRateLimit(ip: string): boolean {
   const now = Date.now();
@@ -36,7 +35,23 @@ export function verifyPassword(password: string): boolean {
 
 export async function isAuthenticated(): Promise<boolean> {
   const cookieStore = await cookies();
-  return cookieStore.get(SESSION_COOKIE)?.value === "authenticated";
+  if (cookieStore.get(SESSION_COOKIE)?.value === "authenticated") {
+    return true;
+  }
+
+  return false;
+}
+
+export function isHeaderAuthenticated(headers: Headers): boolean {
+  return headers.get("x-family-password") === FAMILY_PASSWORD;
+}
+
+export function checkAuth(headers: Headers): boolean {
+  const headerPassword = headers.get("x-family-password");
+  if (headerPassword === FAMILY_PASSWORD) {
+    return true;
+  }
+  return false;
 }
 
 export async function setAuthCookie() {
@@ -69,4 +84,8 @@ export async function setSelectedMember(memberId: string) {
 export async function getSelectedMemberId(): Promise<string | null> {
   const cookieStore = await cookies();
   return cookieStore.get(MEMBER_COOKIE)?.value || null;
+}
+
+export async function getMemberIdFromRequest(headers: Headers): Promise<string | null> {
+  return headers.get("x-member-id") || await getSelectedMemberId();
 }

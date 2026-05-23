@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isAuthenticated, setSelectedMember } from "@/lib/auth";
+import { checkAuth, setSelectedMember } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
 
 export async function POST(request: NextRequest) {
-  if (!(await isAuthenticated())) {
+  if (!(await checkAuth(request.headers))) {
     return NextResponse.json({ error: "未授权" }, { status: 401 });
   }
 
