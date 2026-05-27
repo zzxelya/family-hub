@@ -46,11 +46,19 @@ export function isHeaderAuthenticated(headers: Headers): boolean {
   return headers.get("x-family-password") === FAMILY_PASSWORD;
 }
 
-export function checkAuth(headers: Headers): boolean {
+export async function checkAuth(headers: Headers): Promise<boolean> {
+  // 支持通过请求头认证（小程序等场景）
   const headerPassword = headers.get("x-family-password");
   if (headerPassword === FAMILY_PASSWORD) {
     return true;
   }
+
+  // 支持通过 cookie 认证（浏览器场景）
+  const cookieStore = await cookies();
+  if (cookieStore.get(SESSION_COOKIE)?.value === "authenticated") {
+    return true;
+  }
+
   return false;
 }
 
